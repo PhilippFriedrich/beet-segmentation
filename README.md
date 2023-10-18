@@ -7,7 +7,7 @@ to safe progress follow these steps:
 	1) export labels as VOC xml (zip file has to be unpacked after download)  
 	2) import labels as VOC xml  
 
- general workflow:  
+ ## general workflow:  
  1) literature review
  2) choose suitable deep learning algorithms (object detection/segmentation)  
  3) data preprocessing and image labeling
