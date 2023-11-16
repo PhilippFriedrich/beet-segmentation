@@ -5,7 +5,7 @@ import cv2
 input_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\field_1'
 
 # Pfad zum Ausgabeordner, in dem die zugeschnittenen Bilder gespeichert werden sollen
-output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\10testbilder_Field_1_zugeschnitten'
+output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\field_1_test_imag_all'
 
 # Größe, auf die die Bilder verkleinert werden sollen (2000x1500)
 target_width, target_height = 1500, 2000
