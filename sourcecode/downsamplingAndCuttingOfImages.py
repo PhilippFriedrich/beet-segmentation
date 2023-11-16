@@ -5,13 +5,13 @@ import cv2
 input_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\field_1_test_images_original'
 
 # Pfad zum Ausgabeordner, in dem die zugeschnittenen Bilder gespeichert werden sollen
-output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\(3000x4000_cut_1024)_field_1_test_images10'
+output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\(750x1000_cut_265)_fiel_1_test_images10'
 
 # Größe, auf die die Bilder verkleinert werden sollen (2000x1500)
-target_width, target_height = 3000, 4000
+target_width, target_height = 750, 1000
 
 # Größe der zugeschnittenen Quadrate
-square_size = 1024
+square_size = 265
 
 # Funktion zum Zuschneiden der Bilder
 def crop_and_resize_image(input_path, output_folder):
