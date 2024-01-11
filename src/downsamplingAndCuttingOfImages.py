@@ -8,10 +8,10 @@ input_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnun
 output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\(750x1000_cut_265)_fiel_1_test_images10'
 
 # Größe, auf die die Bilder verkleinert werden sollen (2000x1500)
-target_width, target_height = 750, 1000
+target_width, target_height = 1500, 2000
 
 # Größe der zugeschnittenen Quadrate
-square_size = 265
+square_size = 512
 
 # Funktion zum Zuschneiden der Bilder
 def crop_and_resize_image(input_path, output_folder):
