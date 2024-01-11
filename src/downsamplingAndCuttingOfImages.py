@@ -11,7 +11,7 @@ output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnu
 target_width, target_height = 2000, 1500
 
 # Größe der zugeschnittenen Quadrate
-square_size = 512
+square_size = 500
 
 
 # Funktion zum Zuschneiden der Bilder
