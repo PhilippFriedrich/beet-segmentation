@@ -8,7 +8,7 @@ input_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnun
 output_folder = r'C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\(1500x2000)_cut_to_512p_readyToLabel_2'
 
 # Größe, auf die die Bilder verkleinert werden sollen (2000x1500)
-target_width, target_height = 1500, 2000
+target_width, target_height = 2000, 1500
 
 # Größe der zugeschnittenen Quadrate
 square_size = 512
