@@ -1,0 +1,25 @@
+<annotation>
+	<folder>beet</folder>
+	<filename>IMG_20230514_155417_5.jpg</filename>
+	<path>/beet/IMG_20230514_155417_5.jpg</path>
+	<source>
+		<database>Unspecified</database>
+	</source>
+	<size>
+		<width>500</width>
+		<height>500</height>
+		<depth>3</depth>
+	</size>
+	<object>
+		<name>beet</name>
+		<pose>Unspecified</pose>
+		<truncated>0</truncated>
+		<difficult>0</difficult>
+		<bndbox>
+			<xmin>210</xmin>
+			<ymin>311</ymin>
+			<xmax>265</xmax>
+			<ymax>363</ymax>
+		</bndbox>
+	</object>
+</annotation>
