@@ -3,11 +3,11 @@ from PIL import Image
 import numpy as np
 
 # Load the ONNX model
-model_path = 'src/course_best_ckpt.onnx'
+model_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\src\course_best_ckpt.onnx"
 session = onnxruntime.InferenceSession(model_path)
 
 # Load and preprocess the image
-image_path = '../data/custom_dataset/images/train/17.67821.44655.png'
+image_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\Tag3\custom_dataset-20231012T095854Z-001\custom_dataset\images\train\17.67678.42516.png"
 image = Image.open(image_path)
 
 # Preprocess the image (replace with your own preprocessing logic)
@@ -30,3 +30,24 @@ result = session.run([output_name], {input_name: input_data})
 
 # Print the result
 print("Model output:", result)
+
+input_info = session.get_inputs()
+output_info = session.get_outputs()
+
+print("Input information:")
+for input_tensor in input_info:
+    print(input_tensor.name, input_tensor.shape, input_tensor.type)
+
+print("\nOutput information:")
+for output_tensor in output_info:
+    print(output_tensor.name, output_tensor.shape, output_tensor.type)
+
+result = session.run([output_name], {input_name: input_data})
+print("Model output:", result)
+
+
+print("-----------------")
+for idx, output_array in enumerate(result):
+    print(f"Output Array {idx + 1} shape:", output_array.shape)
+    print("Output Array values:")
+    print(output_array)
