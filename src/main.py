@@ -3,11 +3,11 @@ from PIL import Image
 import numpy as np
 
 # Load the ONNX model
-model_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\src\course_best_ckpt.onnx"
+model_path = r"C:\Users\phili\Documents\Studium\Master_Geographie\5_Semester\S_Deep_Learning\beet-segmentation\src\best_ckptNEU.onnx"
 session = onnxruntime.InferenceSession(model_path)
 
 # Load and preprocess the image
-image_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\Tag3\custom_dataset-20231012T095854Z-001\custom_dataset\images\train\17.67678.42516.png"
+image_path = r"C:\Users\phili\Documents\Studium\Master_Geographie\5_Semester\S_Deep_Learning\data\20230514\field_1_allPictures_(1500x2000)_cut_to_512p\IMG_20230514_155225_4.jpg"
 image = Image.open(image_path)
 
 # Preprocess the image (replace with your own preprocessing logic)
