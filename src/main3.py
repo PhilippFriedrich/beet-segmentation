@@ -2,10 +2,10 @@ from ultralytics import YOLO
 import os
 
 # Load a model
-model = YOLO('runs/detect/train2/weights/best.pt')  # pretrained YOLOv8n model
+model = YOLO("src/runs/detect/train2/weights/best.pt")  # pretrained YOLOv8n model
 
 # Define the input image folder
-input_folder = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\zugeschnitteneUndGeoreferenzierteBilder"
+input_folder = "data/zugeschnitteneUndGeoreferenzierteBilder"
 
 # Get a list of image files in the input folder
 image_files = [os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(('.jpg', '.png', '.tiff', '.tif'))]
@@ -21,6 +21,7 @@ for image_file in image_files:
     for result in results:
         boxes = result.boxes  # Boxes object for bounding box outputs
         print(boxes)
+        print(image_file)
         masks = result.masks  # Masks object for segmentation masks outputs
         keypoints = result.keypoints  # Keypoints object for pose outputs
         probs = result.probs  # Probs object for classification outputs
