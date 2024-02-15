@@ -1,11 +1,9 @@
 # Please insure that your custom_dataset are put in same parent dir with YOLOv6_DIR
-train: ../custom_dataset/images/train # train images
-val: ../custom_dataset/images/val # val images
-test: ../custom_dataset/images/test # test images (optional)
+train: C:/Users/phili/Documents/Studium/Master_Geographie/5_Semester/S_Deep_Learning/beet-segmentation/YOLOv6/custom_dataset/images/train # train images
+val: C:/Users/phili/Documents/Studium/Master_Geographie/5_Semester/S_Deep_Learning/beet-segmentation/YOLOv6/custom_dataset/images/val # val images
 
 # whether it is coco dataset, only coco dataset should be set to True.
 is_coco: False
 # Classes
-nc: 20  # number of classes
-names: ['aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus', 'car', 'cat', 'chair', 'cow', 'diningtable', 'dog',
-        'horse', 'motorbike', 'person', 'pottedplant', 'sheep', 'sofa', 'train', 'tvmonitor']  # class names
+nc: 1  # number of classes
+names: ['sugar beet']  # class names
