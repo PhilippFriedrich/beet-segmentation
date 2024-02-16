@@ -7,6 +7,7 @@ model = YOLO("src/runs/detect/train/weights/best.pt")  # pretrained YOLOv8n mode
 # Define the input image folder
 input_folder = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_2\testi"
 
+
 # Get a list of image files in the input folder
 image_files = [os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(('.jpg', '.png', '.tiff', '.tif'))]
 
