@@ -61,23 +61,31 @@ for image_file in image_files:
 gdf = gpd.GeoDataFrame(geometry=polygon_list)
 
 # Buffer single polygons
-buffered = gdf.buffer(0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
-buffered_gdf = gpd.GeoDataFrame(geometry=buffered)
+buffered_poly = gdf.buffer(0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
+buffered_gdf = gpd.GeoDataFrame(geometry=buffered_poly)
 
-# Perform unary union to combine overlapping polygons into single geometries
-union_geometry = unary_union(buffered_gdf.geometry)
+# Perform unary union to combine overlapping polygons into single geometries and create new dataframe
+union_poly = unary_union(buffered_gdf.geometry)
+union_gdf = gpd.GeoDataFrame(geometry=[union_poly])
 
-# Create a new GeoDataFrame with the union result
-union_gdf = gpd.GeoDataFrame(geometry=[union_geometry])
-explode_gdf = union_gdf.explode()
+# Create a new GeoDataFrame with the union result and dissolve geometries
+dissolved_gdf = union_gdf.explode()
 
-buffered_explode = explode_gdf.buffer(-0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
-result_gdf = gpd.GeoDataFrame(geometry=buffered_explode)
+# Reset buffer
+bbox_poly = dissolved_gdf.buffer(-0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
+bbox_gdf = gpd.GeoDataFrame(geometry=bbox_poly)
+
+# Get centoids of each polygon as points
+centroid_point = bbox_gdf.geometry.centroid
+centroid_gdf = gpd.GeoDataFrame(geometry=centroid_point)
 
 # Define the output file path
-output_file = "bounding_box6.geojson"
+output_file_bbox = "results/sb_bbox.geojson"
+output_file_centroid = "results/sb_point.geojson"
 
 # Export the GeoDataFrame to a GeoJSON file
-result_gdf.to_file(output_file, driver='GeoJSON')
+bbox_gdf.to_file(output_file_bbox, driver='GeoJSON')
+centroid_gdf.to_file(output_file_centroid, driver='GeoJSON')
 
-print("Bounding box exported to:", output_file)
+print("Sugar beet bbox exported to:", output_file_bbox)
+print("Sugar beet points exported to:", output_file_centroid)
