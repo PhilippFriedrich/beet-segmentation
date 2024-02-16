@@ -1,83 +1,91 @@
-import onnxruntime
-from PIL import Image
+from ultralytics import YOLO
+import os
+from osgeo import gdal
 import numpy as np
+import geopandas as gpd
+from shapely.geometry import Polygon, CAP_STYLE, JOIN_STYLE
+from shapely.ops import unary_union
+
+# Load a model
+model = YOLO("runs/detect/train/weights/best.pt")  # pretrained YOLOv8n model
+
+# Define the input image folder
+input_folder = "data/tilesZugeschnittenUndJsonZurGeoRef"
+
+# Get a list of image files in the input folder
+image_files = [os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(('.jpg', '.png', '.tiff', '.tif'))]
+
+# Define function for coordinate conversion
+def pixel_to_geo(pixel_x, pixel_y, geotransform):
+    geo_x = geotransform[0] + pixel_x * geotransform[1] + pixel_y * geotransform[2]
+    geo_y = geotransform[3] + pixel_x * geotransform[4] + pixel_y * geotransform[5]
+    return geo_x, geo_y
+
+polygon_list = []
+
+# Process each image in the input folder
+for image_file in image_files:
+    # Run inference on the current image
+    results = model(image_file)
+
+    dataset = gdal.Open(image_file)
+    if dataset is None:
+        raise FileNotFoundError("Image file not found")
+
+    # Get geotransform
+    geotransform = dataset.GetGeoTransform()
+
+    # Process results list
+    for result in results:
+        boxes = result.boxes  # Boxes object for bounding box outputs
+        if boxes.shape[0] != 0:
+            pixel_xmin = boxes.xyxy[0][0].item()
+            pixel_ymin = boxes.xyxy[0][1].item()
+            pixel_xmax = boxes.xyxy[0][2].item()
+            pixel_ymax = boxes.xyxy[0][3].item()
+
+            # Convert pixel coordinates to geographic coordinates
+            geo_xmin, geo_ymin = pixel_to_geo(pixel_xmin, pixel_ymin, geotransform)
+            geo_xmax, geo_ymax = pixel_to_geo(pixel_xmax, pixel_ymax, geotransform)
+            
+            # Create a bounding box as a Shapely Polygon object
+            bounding_box = Polygon([(geo_xmin, geo_ymin), (geo_xmax, geo_ymin), (geo_xmax, geo_ymax), (geo_xmin, geo_ymax)])
+
+            polygon_list.append(bounding_box)
+
+        else:
+            continue
 
 
-# Load the ONNX model
+# Create a GeoDataFrame from the list of polygons
+gdf = gpd.GeoDataFrame(geometry=polygon_list)
 
-model_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\src\best_ckpt_(zuVielBoxen).onnx"
-session = onnxruntime.InferenceSession(model_path)
+# Buffer single polygons
+buffered_poly = gdf.buffer(0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
+buffered_gdf = gpd.GeoDataFrame(geometry=buffered_poly)
 
-# Load and preprocess the image
-image_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\BeetSegmentation\beet-segmentation\data\20230514\field_1_allPictures_(1500x2000)_cut_to_512p\IMG_20230514_155219_3.jpg"
-#image_path = r"C:\Users\Gustav Schimmer\Desktop\Studium\Semester_3\deepLearnung\Tag3\custom_dataset-20231012T095854Z-001\custom_dataset\images\train\17.67681.42715.png"
+# Perform unary union to combine overlapping polygons into single geometries and create new dataframe
+union_poly = unary_union(buffered_gdf.geometry)
+union_gdf = gpd.GeoDataFrame(geometry=[union_poly])
 
-image = Image.open(image_path)
+# Create a new GeoDataFrame with the union result and dissolve geometries
+dissolved_gdf = union_gdf.explode()
 
+# Reset buffer
+bbox_poly = dissolved_gdf.buffer(-0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
+bbox_gdf = gpd.GeoDataFrame(geometry=bbox_poly)
 
-# Preprocess the image (replace with your own preprocessing logic)
-# For example, resizing the image to match the expected input size
-#input_size = (256, 256)
-input_size = (512, 512)
+# Get centoids of each polygon as points
+centroid_point = bbox_gdf.geometry.centroid
+centroid_gdf = gpd.GeoDataFrame(geometry=centroid_point)
 
-image = image.resize(input_size)
-input_data = np.array(image, dtype=np.float32)
-input_data = np.transpose(input_data, (2, 0, 1))  # Channels-first format if needed
+# Define the output file path
+output_file_bbox = "results/sb_bbox.geojson"
+output_file_centroid = "results/sb_point.geojson"
 
-# Normalize the input data (replace with your own normalization logic)
-input_data = (input_data - 128.0) / 128.0
+# Export the GeoDataFrame to a GeoJSON file
+bbox_gdf.to_file(output_file_bbox, driver='GeoJSON')
+centroid_gdf.to_file(output_file_centroid, driver='GeoJSON')
 
-# Reshape the input data if needed
-input_data = np.expand_dims(input_data, axis=0)
-
-# Run the model
-input_name = session.get_inputs()[0].name
-output_name = session.get_outputs()[0].name
-result = session.run([output_name], {input_name: input_data})
-
-# Print the result
-print("Model output:", result)
-
-input_info = session.get_inputs()
-output_info = session.get_outputs()
-
-print("Input information:")
-for input_tensor in input_info:
-    print(input_tensor.name, input_tensor.shape, input_tensor.type)
-
-print("\nOutput information:")
-for output_tensor in output_info:
-    print(output_tensor.name, output_tensor.shape, output_tensor.type)
-
-result = session.run([output_name], {input_name: input_data})
-print("Model output:", result)
-
-
-print("-----------------")
-for idx, output_array in enumerate(result):
-    print(f"Output Array {idx + 1} shape:", output_array.shape)
-    print("Output Array values:")
-    print(output_array)
-
-import cv2
-
-# Laden des Eingabebildes
-input_image = cv2.imread(image_path)
-
-# Überprüfen, ob Bounding Boxes vorhanden sind
-if result and len(result[0][0]) > 0:
-    # Iteriere über die Bounding Boxes und zeichne sie auf das Bild
-    for box in result[0][0]:
-        x, y, w, h, _, _ = box.astype(int)
-        cv2.rectangle(input_image, (x, y), (x+w, y+h), (0, 255, 0), 2)
-
-    # Zeige das Bild mit den gezeichneten Bounding Boxes
-    cv2.imshow("Output Image", input_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-else:
-    print("Keine Bounding Boxes gefunden.")
-
-onnx.checker.check_model(onnx_model)
-
-    
+print("Sugar beet bbox exported to:", output_file_bbox)
+print("Sugar beet points exported to:", output_file_centroid)
