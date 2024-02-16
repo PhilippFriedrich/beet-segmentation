@@ -7,7 +7,7 @@ from shapely.geometry import Polygon, CAP_STYLE, JOIN_STYLE
 from shapely.ops import unary_union
 
 # Load a model
-model = YOLO("runs/detect/train/weights/best.pt")  # pretrained YOLOv8n model
+model = YOLO("runs/detect/train/weights/best.pt")  # pretrained YOLOv6n model
 
 # Define the input image folder
 input_folder = "data/tilesZugeschnittenUndJsonZurGeoRef"
