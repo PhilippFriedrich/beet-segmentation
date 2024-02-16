@@ -5,7 +5,7 @@ import os
 model = YOLO("src/runs/detect/train2/weights/best.pt")  # pretrained YOLOv8n model
 
 # Define the input image folder
-input_folder = "data/zugeschnitteneUndGeoreferenzierteBilder"
+input_folder = "data/tilesZugeschnittenUndJsonZurGeoRef"
 
 # Get a list of image files in the input folder
 image_files = [os.path.join(input_folder, f) for f in os.listdir(input_folder) if f.endswith(('.jpg', '.png', '.tiff', '.tif'))]
