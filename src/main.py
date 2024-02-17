@@ -67,7 +67,6 @@ def main():
                 
                 # Create a bounding box as a Shapely Polygon object
                 bounding_box = Polygon([(geo_xmin, geo_ymin), (geo_xmax, geo_ymin), (geo_xmax, geo_ymax), (geo_xmin, geo_ymax)])
-
                 polygon_list.append(bounding_box)
 
             else:
@@ -95,21 +94,22 @@ def main():
     centroid_point = bbox_gdf.geometry.centroid
     centroid_gdf = gpd.GeoDataFrame(geometry=centroid_point)
 
+    # Read area polygon and count beets within 
+    area_gdf = gpd.read_file(input_path_area)
+    points_in_area = gpd.sjoin(centroid_gdf, area_gdf, how='inner', op='within')
+    bbox_in_area = gpd.sjoin(bbox_gdf, area_gdf, how='inner', op='within')
+
     # Export the GeoDataFrame to a GeoJSON file
-    bbox_gdf.to_file(output_file_bbox, driver='GeoJSON')
-    centroid_gdf.to_file(output_file_centroid, driver='GeoJSON')
+    bbox_in_area.to_file(output_file_bbox, driver='GeoJSON')
+    points_in_area.to_file(output_file_centroid, driver='GeoJSON')
 
     print("Sugar beet bbox exported to:", output_file_bbox)
     print("Sugar beet points exported to:", output_file_centroid)
 
-    # Read area polygon and count beets within 
-    area_gdf = gpd.read_file(input_path_area)
-    beets_in_area = gpd.sjoin(centroid_gdf, area_gdf, how='inner', op='within')
-
     print("-----------------------------------")
     print("-----------------------------------")
-    print(f"Number of beets detected in area of interest: {len(beets_in_area)}")
-    print(f"Plant density in area of interest: {round(len(beets_in_area)/area_gdf.geometry.area.iloc[0], 2)} plants/m²")
+    print(f"Number of beets detected in area of interest: {len(points_in_area)}")
+    print(f"Plant density in area of interest: {round(len(points_in_area)/area_gdf.geometry.area.iloc[0], 2)} plants/m²")
     print("-----------------------------------")
     print("-----------------------------------")
 
