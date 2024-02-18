@@ -73,6 +73,8 @@ $ python main.py path/to/field1_orthomosaic_UTM32N.tif ../data/study_area/sb_fie
 ```
 This example will detect the single sugar beet plants on the provided orthophoto (field1_orthomosaic_UTM32N.tif) and extract point and bounding box geometries inside the area polygon (sb_field_1_area.geojson). The geometries are exported in GeoJSON format.
 
+We provided the example area of interest inside the data section of this project (see [here](data/study_area/sb_field_1_area.geojson)). The orthophoto is too large to store on GitHub, you can download it [here](). 
+
 ![Sugar Beets on Orthophoto](img/example_ortho.png)
 
 Restult:
