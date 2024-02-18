@@ -10,8 +10,7 @@ Sugar beet cultivation plays a significant role in modern agricultural practices
 
 This project aims to provide a python program to extract and count single sugar beet plants based on deep learning methods. We use a YOLOv6 algorithm trained on custom dataset for plant segmentation. Counting and geographical processing is done afterwards, geometries are returned in GeoJSON format. The figure below shows a single sugar beet plant to give some impression on growing stage and model application. To run the program follow the given instructions.
 
-![Sugar Beet Plant](data/20230514/IMG_20230514_160205.jpg)
-<img src="data/20230514/IMG_20230514_160205.jpg" alt = "Sugar Beet Plant" width="300" height="200">
+![Sugar Beet Plant](img/sugar_beet_plant.png)
 
 ## Installation
 
