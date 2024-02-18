@@ -2,3 +2,4 @@ src/.ipynb_checkpoints
 src/jupyter_notebooks/.ipynb_checkpoints
 src/.idea
 .idea
+src/modules/__pycache__/
