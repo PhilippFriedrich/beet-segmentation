@@ -8,6 +8,111 @@ from rasterio.windows import Window
 import numpy as np
 import os
 import ultralytics
+import sys
+import fiona
+
+
+# Function to check input arguments
+def check_input_arguments():
+    """
+    Checks if provided command-line arguments are valid
+    """
+
+    # Ensure that the correct number of command-line arguments are provided
+    if len(sys.argv) != 3:
+        print("Usage: python script.py arg1 arg2")
+        print("Please provide two arguments.")
+        sys.exit(1)  # Exit with a non-zero status code to indicate an error
+
+    # Extract command-line arguments
+    arg1 = sys.argv[1]
+    arg2 = sys.argv[2]
+
+    def is_integer(value):
+        try:
+            int(value)
+            return True
+        except ValueError:
+            return False
+
+    if not isinstance(arg1, str):
+        print("Error. arg1 must be of type string.")
+        sys.exit(1)
+
+    elif not isinstance(arg2, str):
+        print("Error. arg2 must be of type string.")
+        sys.exit(1)
+
+    else:
+        print("System Arguments correct. Start processing..")
+
+    return arg1, arg2
+
+
+# Function to check if input is file
+def check_geojson(input_file):
+    """
+    Checks if input file is valid GeoJSON
+    :param input_file: Path to GeoJSON file
+    :return: Boolean 
+    """
+
+    def is_valid_geojson(file_path):
+        try:
+            with fiona.open(file_path) as f:
+                # Check if the file format is GeoJSON
+                if f.driver == "GeoJSON":
+                    return True
+                else:
+                    print("File is not in GeoJSON format.")
+                    return False
+        except Exception as e:
+            print("Error reading file:", e)
+            return False
+
+    # Check if the file exists
+    if not os.path.isfile(input_file):
+        print(f"File '{input_file}' does not exist.")
+        return False
+
+    # Check if the file is a valid GeoJSON file
+    if not is_valid_geojson(input_file):
+        return False
+
+    return True
+
+
+# Function to check if input is valid GeoTIFF
+def check_geotiff(input_file):
+    """
+    Checks if input file is valid GeoTIFF
+    :param input_file: Path to GeoTIFF file
+    :return: Boolean 
+    """
+
+    def is_valid_geotiff(file_path):
+        try:
+            # Attempt to open the file using rasterio
+            with rasterio.open(file_path) as src:
+                # Check if it's a GeoTIFF file
+                if src.driver == 'GTiff':
+                    return True
+                else:
+                    return False
+        except Exception as e:
+            print("Error opening file:", e)
+            return False
+
+    # Check if the file exists
+    if not os.path.isfile(input_file):
+        print(f"File '{input_file}' does not exist.")
+        return False
+
+    # Check if the file is a valid GeoJSON file
+    if not is_valid_geotiff(input_file):
+        return False
+
+    return True
 
 
 # Function to create new output folder
