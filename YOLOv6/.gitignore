@@ -11,7 +11,6 @@ __pycache__/
 .Python
 videos/
 build/
-weights/
 develop-eggs/
 dist/
 downloads/
