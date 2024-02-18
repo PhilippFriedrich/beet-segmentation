@@ -20,20 +20,32 @@ def main():
     """
 
     # Define GeoTIFF paths here
-    input_path_tif = r"C:\Users\phili\Documents\Studium\Master_Geographie\5_Semester\S_Deep_Learning\project\field1_orthomosaic_UTM32N.tif"
-    input_path_area = "../data/study_area/sb_field_1_area.geojson"
+    input_path_tif, input_path_area = bf.check_input_arguments()
+    input_path_model = "../YOLOv6/runs/detect/train/weights/best.pt"
 
     # Define output paths
     output_dir_tiles = "../results/orthophoto_tiles"
     output_file_bbox = "../results/sb_bbox.geojson"
     output_file_centroid = "../results/sb_point.geojson"
 
+    # Check input GeoTIFF
+    if bf.check_geotiff(input_path_tif):
+        print("Input file is a valid GeoTIFF. Continue processing.")
+    else:
+        print("Input file is not a valid GeoTIFF.")
+
+    # Check input GeoJSON
+    if bf.check_geojson(input_path_area):
+        print("Input file is a valid GeoJSON. Continue processing.")
+    else:
+        print("Input file is not a valid GeoJSON.")
+    
     # Crop orthophoto
     bf.create_output_folder(output_dir_tiles)
     bf.crop_and_save_tiles(input_path_tif, output_dir_tiles)
 
     # Load a model
-    model = YOLO("../YOLOv6/runs/detect/train/weights/best.pt")  # pretrained YOLOv6n model
+    model = YOLO(input_path_model)  # pretrained YOLOv6n model
 
     # Get a list of image files in the input folder
     image_files = [os.path.join(output_dir_tiles, f) for f in os.listdir(output_dir_tiles) if f.endswith(('.jpg', '.png', '.tiff', '.tif'))]
@@ -84,20 +96,33 @@ def main():
     union_gdf = gpd.GeoDataFrame(geometry=[union_poly])
 
     # Create a new GeoDataFrame with the union result and dissolve geometries
-    dissolved_gdf = union_gdf.explode()
+    dissolved_gdf = union_gdf.explode(index_parts=True)
 
+    # Read area polygon and count beets within 
+    area_gdf = gpd.read_file(input_path_area)
+    
     # Reset buffer
     bbox_poly = dissolved_gdf.buffer(-0.025, cap_style=CAP_STYLE.flat, join_style=JOIN_STYLE.mitre)
     bbox_gdf = gpd.GeoDataFrame(geometry=bbox_poly)
+    bbox_gdf.crs = area_gdf.crs
 
     # Get centoids of each polygon as points
     centroid_point = bbox_gdf.geometry.centroid
     centroid_gdf = gpd.GeoDataFrame(geometry=centroid_point)
+    centroid_gdf.crs = area_gdf.crs
 
-    # Read area polygon and count beets within 
-    area_gdf = gpd.read_file(input_path_area)
+    # Extract sugar beets within area
     points_in_area = gpd.sjoin(centroid_gdf, area_gdf, how='inner', op='within')
-    bbox_in_area = gpd.sjoin(bbox_gdf, area_gdf, how='inner', op='within')
+    points_in_area = points_in_area.to_crs(area_gdf.crs)
+
+    # Drop columns if they exist
+    if 'index_left' in bbox_gdf.columns:
+        bbox_gdf.drop(columns=['index_left'], inplace=True)
+    if 'index_right' in points_in_area.columns:
+        points_in_area.drop(columns=['index_right'], inplace=True)
+
+    bbox_in_area = gpd.sjoin(bbox_gdf, points_in_area, how='inner', op='intersects')
+    bbox_in_area = bbox_in_area.to_crs(area_gdf.crs)
 
     # Export the GeoDataFrame to a GeoJSON file
     bbox_in_area.to_file(output_file_bbox, driver='GeoJSON')
