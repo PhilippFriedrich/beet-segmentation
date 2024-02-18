@@ -32,13 +32,11 @@ $ conda activate beet-segmentation
 
 ## Usage
 
-Within the created environment the program can be executed. It is designed to run from the command line. The user must provide a orthophoto or georeferenced image as GeoTIFF for wich the analysis is done. Moreover an area of interest can be used by the program. The polygon needs to be in GEOJSON format. If no area of interest is provided, the program will count all plant on the image. The program can be executed as follows:
+Within the created environment the program can be executed. It is designed to run from the command line. The user must provide a orthophoto or georeferenced image as GeoTIFF for wich the analysis is done. Moreover the program uses an area of interest to count the plants inside and export the geometries. The polygon needs to be in GEOJSON format. The program can be executed as follows:
 
 ```
 $ python main.py arg1 arg2
 ```
-
-If you want to change the folder structure or run the program within a IDE, you may need to adjust filepaths and inputs.
 
 ### Arguments
 
@@ -52,6 +50,8 @@ The program creates an output folder if it doesn't already exist. Within this ou
 - **Plant bounding boxes as GeoJSON** Polygon representation of the single plant bounding boxes.
 
 The results will be stored in the results folder of the project.
+
+If you want to change the folder structure or run the program within a IDE, you may need to adjust filepaths and inputs.
 
 ## Model training and implementation
 
